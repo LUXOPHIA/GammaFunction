@@ -1,0 +1,16 @@
+object ViewerFrame: TViewerFrame
+  Size.Width = 512.000000000000000000
+  Size.Height = 512.000000000000000000
+  Size.PlatformDefault = False
+  object Viewport3D1: TViewport3D
+    Align = Client
+    Color = claBlack
+    Size.Width = 512.000000000000000000
+    Size.Height = 512.000000000000000000
+    Size.PlatformDefault = False
+    UsingDesignCamera = False
+    OnMouseDown = Viewport3D1MouseDown
+    OnMouseMove = Viewport3D1MouseMove
+    OnMouseUp = Viewport3D1MouseUp
+  end
+end
