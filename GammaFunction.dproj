@@ -313,6 +313,9 @@
         <DCCReference Include="_LIBRARY\LUXOPHIA\LUX\LUX.D4x4.pas"/>
         <DCCReference Include="_LIBRARY\LUXOPHIA\LUX\Complex\LUX.Complex.pas"/>
         <DCCReference Include="_LIBRARY\LUXOPHIA\LUX\Complex\LUX.Complex.Diff.pas"/>
+        <DCCReference Include="_LIBRARY\LUXOPHIA\LUX\D1\Gamma\FMX\LUX.D1.Gamma.FMX.D3.pas"/>
+        <DCCReference Include="_LIBRARY\LUXOPHIA\LUX\D1\Gamma\LUX.D1.Gamma.C2.pas"/>
+        <DCCReference Include="_LIBRARY\LUXOPHIA\LUX\D1\Gamma\LUX.D1.Gamma.C2.Diff.pas"/>
         <DCCReference Include="_LIBRARY\LUXOPHIA\LUX.FMX.Graphics.D3\LUX.FMX.Graphics.D3.pas"/>
         <DCCReference Include="_LIBRARY\LUXOPHIA\LUX.FMX.Graphics.D3\LUX.FMX.Graphics.D3.Shaper.pas"/>
         <DCCReference Include="Main.pas">
@@ -323,9 +326,6 @@
             <DesignClass>TFrame</DesignClass>
         </DCCReference>
         <DCCReference Include="Core.pas"/>
-        <DCCReference Include="_LIBRARY\LUX.Gamma.FMX.D3.pas"/>
-        <DCCReference Include="_LIBRARY\LUX.Gamma.C2.pas"/>
-        <DCCReference Include="_LIBRARY\LUX.Gamma.C2.Diff.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>

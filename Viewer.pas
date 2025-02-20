@@ -7,8 +7,8 @@ uses
   FMX.Types, FMX.Controls, FMX.Forms, FMX.Viewport3D,
   LUX.D4x4,
   LUX.FMX.Graphics.D3,
-  LUX.Gamma.FMX.D3,
-  LUX.Gamma.C2.Diff;
+  LUX.D1.Gamma.FMX.D3,
+  LUX.D1.Gamma.C2.Diff;
 
 type //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$【 T Y P E 】
 
@@ -59,8 +59,8 @@ begin
      _Light3D.Pose := TSingleM4.RotateX( DegToRad( -45 ) );
 
      _Gamma3D := TGamma3D.Create( _World3D );
-     _Gamma3D.Material.Ambient  := TAlphaColors.Black;
-     _Gamma3D.Material.Diffuse  := TAlphaColors.White;
+     _Gamma3D.Material.Ambient  := TAlphaColorF.Create( 0.2, 0.2, 0.2 ).ToAlphaColor;
+     _Gamma3D.Material.Diffuse  := TAlphaColorF.Create( 0.8, 0.8, 0.8 ).ToAlphaColor;
      _Gamma3D.Material.Specular := TAlphaColors.Null;
      _Gamma3D.Material.Texture.LoadFromFile( '../../_DATA/Texture 1024x1024.png' );
      _Gamma3D.Pose := TSingleM4.Translate( 1/2, -2*Sqrt(Pi), 0 );
