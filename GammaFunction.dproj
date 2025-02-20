@@ -298,14 +298,6 @@
         <DelphiCompile Include="$(MainSource)">
             <MainSource>MainSource</MainSource>
         </DelphiCompile>
-        <DCCReference Include="Viewer.pas">
-            <Form>ViewerFrame</Form>
-            <DesignClass>TFrame</DesignClass>
-        </DCCReference>
-        <DCCReference Include="Main.pas">
-            <Form>Form1</Form>
-        </DCCReference>
-        <DCCReference Include="Core.pas"/>
         <DCCReference Include="_LIBRARY\LUXOPHIA\LUX\LUX.pas"/>
         <DCCReference Include="_LIBRARY\LUXOPHIA\LUX\LUX.D1.DIff.pas"/>
         <DCCReference Include="_LIBRARY\LUXOPHIA\LUX\LUX.D1.pas"/>
@@ -323,6 +315,17 @@
         <DCCReference Include="_LIBRARY\LUXOPHIA\LUX\Complex\LUX.Complex.Diff.pas"/>
         <DCCReference Include="_LIBRARY\LUXOPHIA\LUX.FMX.Graphics.D3\LUX.FMX.Graphics.D3.pas"/>
         <DCCReference Include="_LIBRARY\LUXOPHIA\LUX.FMX.Graphics.D3\LUX.FMX.Graphics.D3.Shaper.pas"/>
+        <DCCReference Include="Main.pas">
+            <Form>Form1</Form>
+        </DCCReference>
+        <DCCReference Include="Viewer.pas">
+            <Form>ViewerFrame</Form>
+            <DesignClass>TFrame</DesignClass>
+        </DCCReference>
+        <DCCReference Include="Core.pas"/>
+        <DCCReference Include="_LIBRARY\LUX.Gamma.FMX.D3.pas"/>
+        <DCCReference Include="_LIBRARY\LUX.Gamma.C2.pas"/>
+        <DCCReference Include="_LIBRARY\LUX.Gamma.C2.Diff.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>

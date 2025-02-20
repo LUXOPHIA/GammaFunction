@@ -20,6 +20,9 @@ uses
   LUX.Complex.Diff in '_LIBRARY\LUXOPHIA\LUX\Complex\LUX.Complex.Diff.pas',
   LUX.FMX.Graphics.D3 in '_LIBRARY\LUXOPHIA\LUX.FMX.Graphics.D3\LUX.FMX.Graphics.D3.pas',
   LUX.FMX.Graphics.D3.Shaper in '_LIBRARY\LUXOPHIA\LUX.FMX.Graphics.D3\LUX.FMX.Graphics.D3.Shaper.pas',
+  LUX.Gamma.FMX.D3 in '_LIBRARY\LUX.Gamma.FMX.D3.pas',
+  LUX.Gamma.C2 in '_LIBRARY\LUX.Gamma.C2.pas',
+  LUX.Gamma.C2.Diff in '_LIBRARY\LUX.Gamma.C2.Diff.pas',
   Main in 'Main.pas' {Form1},
   Viewer in 'Viewer.pas' {ViewerFrame: TFrame},
   Core in 'Core.pas';
