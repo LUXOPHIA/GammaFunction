@@ -10,7 +10,6 @@ uses
 type
   TForm1 = class(TForm)
     Viewer1: TViewerFrame;
-    Panel1: TPanel;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
   private
