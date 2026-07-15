@@ -47,8 +47,8 @@ begin
      _Gammas.Add( LUX.C2.Gamma.Ooura  .Diff.Gamma   );  // 4
 
      Viewer1.Area  := TDoubleAreaC.Create( -5, -5, +5, +5 );
-     Viewer1.DivX  := 256;
-     Viewer1.DivY  := 256;
+     Viewer1.DivX  := 255;  // 格子点が極を踏まないように注意。
+     Viewer1.DivY  := 255;
      Viewer1.Scale := 2*Sqrt(Pi);
 
      ComboBoxAChange( Sender );

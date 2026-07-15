@@ -165,6 +165,9 @@ begin
 
           _Angle := _Angle + ( P - _MouseP );
 
+          if _Angle.Y > +90 then _Angle.Y := +90;
+          if _Angle.Y < -90 then _Angle.Y := -90;
+
           _Camera3D.Pose := TSingleM4.RotateY( -DegToRad( _Angle.X ) )
                           * TSingleM4.RotateX( -DegToRad( _Angle.Y ) )
                           * TSingleM4.Translate( 0, 0, 20 );
