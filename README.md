@@ -22,7 +22,7 @@ A FireMonkey sample that renders the $|\Gamma(z)|$ surface of the complex gamma 
 |---|---|
 | `LUX.D1.Gamma.Lanczos` (+`.Diff`) | Real $\Gamma$ / $\ln\Gamma$ — Lanczos approximation |
 | `LUX.D1.Gamma.Ooura` (+`.Diff`) | Real $\Gamma$ / $\ln\Gamma$ — Ooura's dgamma / dlgamma |
-| `LUX.C2.Gamma.Lanczos` (+`.Diff`) | Complex $\Gamma$ / $\mathrm{Ln}\,\Gamma$ — Lanczos approximation |
+| `LUX.C2.Gamma.Lanczos` (+`.Diff`) | Complex $\Gamma$ / $\mathrm{Ln}\Gamma$ — Lanczos approximation |
 | `LUX.C2.Gamma.Ooura` (+`.Diff`) | Complex $\Gamma$ — Ooura's cdgamma |
 
 The `.Diff` units are automatic-differentiation versions built on dual numbers; the sample uses them to compute exact surface normals.
@@ -31,13 +31,13 @@ The `.Diff` units are automatic-differentiation versions built on dual numbers; 
 
 ### 🟨 Lanczos approximation
 
-$$
-\Gamma(z) = \sqrt{2\pi}\; A(z)\; B^{\,z-\frac{1}{2}}\; e^{-B},
+```math
+\Gamma(z) = \sqrt{2\pi} \cdot A(z) \cdot B^{z-\frac{1}{2}} \cdot e^{-B},
 \qquad B = z + g - \tfrac{1}{2},
 \qquad A(z) = c_0 + \sum_{k=1}^{N-1} \frac{c_k}{z-1+k}
-$$
+```
 
-- One smooth formula covers $\operatorname{Re} z \ge \tfrac{1}{2}$; the reflection formula $\Gamma(z)\,\Gamma(1-z) = \pi/\sin(\pi z)$ handles the rest of the plane. Extends naturally to complex arguments, and $\ln\Gamma$ comes directly from the log form.
+- One smooth formula covers $\mathrm{Re}(z) \ge \tfrac{1}{2}$; the reflection formula $\Gamma(z) \Gamma(1-z) = \pi / \sin(\pi z)$ handles the rest of the plane. Extends naturally to complex arguments, and $\ln\Gamma$ comes directly from the log form.
 - Accuracy and cost are tunable: the parameter $g$ and the number of terms $N$ form matched sets. More terms, more divisions, more accuracy.
 - Implemented coefficient sets (max relative error measured against mpmath on $[-5,5]^2$, double precision):
 
@@ -54,7 +54,7 @@ Minimax-optimized elementary-function approximations by Takuya Ooura (1996). Fix
 
 - `dgamma` (real $\Gamma$): a single fixed polynomial around a shifted argument plus a recurrence product; $\sim 10^{-15}$, i.e. the double-precision limit.
 - `dlgamma` (real $\ln\Gamma$): four branches — a series near $0$, two mid-range table-based rationals, and Stirling-type asymptotics for $x \ge 8$; $\sim 10^{-14}$. Returns NaN where $\Gamma(x) < 0$.
-- `cdgamma` (complex $\Gamma$): one fixed rational approximation evaluated in complex arithmetic, plus reflection for $\operatorname{Re} z < 0$; $\sim 10^{-13}$ on $[-5,5]^2$.
+- `cdgamma` (complex $\Gamma$): one fixed rational approximation evaluated in complex arithmetic, plus reflection for $\mathrm{Re}(z) < 0$; $\sim 10^{-13}$ on $[-5,5]^2$.
 
 Rule of thumb: Ooura gives (near) full double precision at a fixed, minimal cost; Lanczos lets you trade accuracy for speed and yields $\ln\Gamma$ directly.
 
@@ -62,7 +62,7 @@ Rule of thumb: Ooura gives (near) full double precision at a fixed, minimal cost
 
 - Non-positive integers $0, -1, -2, \dots$ are poles; with the default masked-FPU environment the functions return INF/NaN there.
 - Complex `LnGamma*` satisfies $\exp(\mathrm{LnGamma}(z)) = \Gamma(z)$ but is not the principal branch: it may differ from the continuous log-gamma (lgamma) by integer multiples of $2\pi i$.
-- Real `RLnGamma` returns NaN on the intervals where $\Gamma(x) < 0$ ($-1<x<0,\ -3<x<-2,\ \dots$), matching the original dlgamma.
+- Real `RLnGamma` returns NaN on the intervals where $\Gamma(x) < 0$ ($-1<x<0$, $-3<x<-2$, …), matching the original dlgamma.
 
 ## 🟦 Verification
 

@@ -22,7 +22,7 @@ Gamma Function in Delphi.
 |---|---|
 | `LUX.D1.Gamma.Lanczos` (+`.Diff`) | 実数 $\Gamma$ / $\ln\Gamma$ — Lanczos 近似 |
 | `LUX.D1.Gamma.Ooura` (+`.Diff`) | 実数 $\Gamma$ / $\ln\Gamma$ — 大浦版 dgamma / dlgamma |
-| `LUX.C2.Gamma.Lanczos` (+`.Diff`) | 複素 $\Gamma$ / $\mathrm{Ln}\,\Gamma$ — Lanczos 近似 |
+| `LUX.C2.Gamma.Lanczos` (+`.Diff`) | 複素 $\Gamma$ / $\mathrm{Ln}\Gamma$ — Lanczos 近似 |
 | `LUX.C2.Gamma.Ooura` (+`.Diff`) | 複素 $\Gamma$ — 大浦版 cdgamma |
 
 `.Diff` 系は双対数 (dual number) による自動微分対応版。サンプルでは曲面の法線を解析的に求めるために使用。
@@ -31,13 +31,13 @@ Gamma Function in Delphi.
 
 ### 🟨 Lanczos 近似
 
-$$
-\Gamma(z) = \sqrt{2\pi}\; A(z)\; B^{\,z-\frac{1}{2}}\; e^{-B},
+```math
+\Gamma(z) = \sqrt{2\pi} \cdot A(z) \cdot B^{z-\frac{1}{2}} \cdot e^{-B},
 \qquad B = z + g - \tfrac{1}{2},
 \qquad A(z) = c_0 + \sum_{k=1}^{N-1} \frac{c_k}{z-1+k}
-$$
+```
 
-- 一つの滑らかな式で $\operatorname{Re} z \ge \tfrac{1}{2}$ を覆い、残りは反射公式 $\Gamma(z)\,\Gamma(1-z) = \pi/\sin(\pi z)$ で処理する。複素引数へ自然に拡張でき、対数形なので $\ln\Gamma$ も直接得られる。
+- 一つの滑らかな式で $\mathrm{Re}(z) \ge \tfrac{1}{2}$ を覆い、残りは反射公式 $\Gamma(z) \Gamma(1-z) = \pi / \sin(\pi z)$ で処理する。複素引数へ自然に拡張でき、対数形なので $\ln\Gamma$ も直接得られる。
 - パラメータ $g$ と項数 $N$ の組で精度とコストを調整できる。項数を増やすほど除算が増え、精度が上がる。
 - 実装済みの係数セット (mpmath との突き合わせによる $[-5,5]^2$ での最大相対誤差、倍精度):
 
@@ -54,7 +54,7 @@ $$
 
 - `dgamma` (実数 $\Gamma$): シフトした引数まわりの固定多項式 + 漸化式の積。$\sim 10^{-15}$ (倍精度限界)。
 - `dlgamma` (実数 $\ln\Gamma$): 4分岐 — $0$ 近傍の級数、中域のテーブル有理近似2種、$x \ge 8$ のスターリング型漸近展開。$\sim 10^{-14}$。$\Gamma(x) < 0$ の区間では NaN。
-- `cdgamma` (複素 $\Gamma$): 複素演算で評価する単一の固定有理近似 + $\operatorname{Re} z < 0$ の反射公式。$[-5,5]^2$ で $\sim 10^{-13}$。
+- `cdgamma` (複素 $\Gamma$): 複素演算で評価する単一の固定有理近似 + $\mathrm{Re}(z) < 0$ の反射公式。$[-5,5]^2$ で $\sim 10^{-13}$。
 
 目安: 固定コストでほぼ倍精度が欲しいなら大浦版。$N$ で精度と速度を調整したい、$\ln\Gamma$ を直接使いたいなら Lanczos。
 
@@ -62,7 +62,7 @@ $$
 
 - 非正整数 $0, -1, -2, \dots$ は極。既定の浮動小数点例外マスク環境では INF/NaN を返す。
 - 複素 `LnGamma*` は $\exp(\mathrm{LnGamma}(z)) = \Gamma(z)$ を満たすが主枝ではなく、連続な log-gamma (lgamma) と $2\pi i$ の整数倍だけ異なる場合がある。
-- 実数 `RLnGamma` は $\Gamma(x) < 0$ となる区間 ($-1<x<0,\ -3<x<-2,\ \dots$) で NaN を返す (オリジナル dlgamma と同挙動)。
+- 実数 `RLnGamma` は $\Gamma(x) < 0$ となる区間 ($-1<x<0$, $-3<x<-2$, …) で NaN を返す (オリジナル dlgamma と同挙動)。
 
 ## 🟦 Verification
 
