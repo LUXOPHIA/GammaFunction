@@ -7,9 +7,23 @@ type //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
      TListObject = class;
      TListChildr = class;
      TListParent = class;
-     TListEnumer = class;
 
      //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$【 R E C O R D 】
+
+     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TListEnumer
+
+     // 直下の子の列挙子。レコードなのでヒープ割り当てが無い。
+     TListEnumer = record
+     private
+       _Parent :TListParent;
+       _Childr :TListChildr;
+       _NextCh :TListChildr;  // 先読み（列挙中の Current 削除を安全にする）
+     public
+       ///// P R O P E R T Y
+       property Current :TListChildr read _Childr;
+       ///// M E T H O D
+       function MoveNext :Boolean;
+     end;
 
      //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$【 C L A S S 】
 
@@ -46,8 +60,12 @@ type //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
        ///// P R O P E R T Y
        property IsOrdered :Boolean read GetIsOrdered;
        ///// A C C E S S O R
-       function GetParent :TListParent; virtual;
-       procedure SetParent( const Parent_:TListParent ); virtual;
+       // 型付け層（LUX.Data.List）が同名の型付きアクセサを素直に宣言できるよう、
+       // 核のアクセサには 0 を付ける。プロパティ名（Parent）は変えない。
+       // ※ 同名のまま型付け層で reintroduce すると、相互再帰するジェネリックの
+       //    実体化で dcc64 がプロパティの読み取りを見失う（E2130）。
+       function GetParent0 :TListParent; virtual;
+       procedure SetParent0( const Parent_:TListParent ); virtual;
        function GetOrder :Integer; virtual;
        procedure SetOrder( const Order_:Integer ); virtual;
        ///// M E T H O D
@@ -58,12 +76,12 @@ type //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
        procedure AfterConstruction; override;
        destructor Destroy; override;
        ///// P R O P E R T Y
-       property Parent :TListParent read GetParent write SetParent;
-       property Order  :Integer     read GetOrder  write SetOrder ;  // 代入は指定順位のノードとの「交換」であり、間のノードはシフトしない
+       property Parent :TListParent read GetParent0 write SetParent0;
+       property Order  :Integer     read GetOrder   write SetOrder  ;  // 代入は指定順位のノードとの「交換」であり、間のノードはシフトしない
        ///// M E T H O D
-       procedure Remove;
-       procedure InsertPrev( const Siblin_:TListChildr );
-       procedure InsertNext( const Siblin_:TListChildr );
+       procedure Remove; virtual;
+       procedure InsertPrev( const Siblin_:TListChildr ); virtual;
+       procedure InsertNext( const Siblin_:TListChildr ); virtual;
      end;
 
      //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TListParent
@@ -101,8 +119,8 @@ type //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
        procedure _InsertTail( const Childr_:TListChildr );
        ///// E V E N T
        procedure OnInit; virtual;
-       procedure OnInsertChild( const Childr_:TListChildr ); overload; virtual;
-       procedure OnRemoveChild( const Childr_:TListChildr ); overload; virtual;
+       procedure OnInsertChildr( const Childr_:TListChildr ); overload; virtual;
+       procedure OnRemoveChildr( const Childr_:TListChildr ); overload; virtual;
      public
        constructor Create; overload; override;
        destructor Destroy; override;
@@ -117,30 +135,12 @@ type //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
        property OwnereObject                :TObject     read GetOwnereObject             ;
        ///// M E T H O D
        procedure Clear; virtual;
-       procedure InsertHead( const Childr_:TListChildr ); overload;
-       procedure InsertTail( const Childr_:TListChildr ); overload;
-       procedure Add( const Childr_:TListChildr ); overload;
+       procedure InsertHead( const Childr_:TListChildr ); overload; virtual;
+       procedure InsertTail( const Childr_:TListChildr ); overload; virtual;
+       procedure Add( const Childr_:TListChildr ); overload; virtual;
        class procedure Swap( const C1_,C2_:TListChildr ); overload;
        procedure Swap( const I1_,I2_:Integer ); overload;
        function GetEnumerator: TListEnumer;
-     end;
-
-     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TListEnumer
-
-     TListEnumer = class
-     private
-     protected
-       _Parent :TListParent;
-       _Childr :TListChildr;
-       _NextCh :TListChildr;  // 先読み（列挙中の Current 削除を安全にする）
-       ///// A C C E S S O R
-       function GetChildr: TListChildr; virtual;
-     public
-       constructor Create( const Parent_:TListParent );
-       ///// P R O P E R T Y
-       property Current :TListChildr read GetChildr;
-       ///// M E T H O D
-       function MoveNext :Boolean;
      end;
 
 //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$【 R O U T I N E 】
@@ -150,6 +150,19 @@ implementation //###############################################################
 uses System.SysUtils;
 
 //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$【 R E C O R D 】
+
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TListEnumer
+
+//&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& public
+
+function TListEnumer.MoveNext :Boolean;
+begin
+     _Childr := _NextCh;  // 次要素を先読みしているため、列挙中の削除は Current に対してのみ安全
+
+     Result := _Childr <> _Parent.Origin;
+
+     if Result then _NextCh := _Childr._Next;
+end;
 
 //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$【 C L A S S 】
 
@@ -217,12 +230,12 @@ end;
 
 //////////////////////////////////////////////////////////////// A C C E S S O R
 
-function TListChildr.GetParent :TListParent;
+function TListChildr.GetParent0 :TListParent;
 begin
      Result := _Parent;
 end;
 
-procedure TListChildr.SetParent( const Parent_:TListParent );
+procedure TListChildr.SetParent0( const Parent_:TListParent );
 begin
      Remove;
 
@@ -255,7 +268,7 @@ end;
 
 procedure TListChildr._Remove;
 begin
-     _Parent.OnRemoveChild( Self );
+     _Parent.OnRemoveChildr( Self );
 
      Bind( _Prev, _Next );
 
@@ -502,7 +515,7 @@ begin
 
      Inc( _ChildrsN );
 
-     OnInsertChild( C1_ );
+     OnInsertChildr( C1_ );
 end;
 
 procedure TListParent._InsertHead( const Childr_:TListChildr );
@@ -526,12 +539,12 @@ end;
 
 //------------------------------------------------------------------------------
 
-procedure TListParent.OnInsertChild( const Childr_:TListChildr );
+procedure TListParent.OnInsertChildr( const Childr_:TListChildr );
 begin
 
 end;
 
-procedure TListParent.OnRemoveChild( const Childr_:TListChildr );
+procedure TListParent.OnRemoveChildr( const Childr_:TListChildr );
 begin
 
 end;
@@ -651,44 +664,11 @@ end;
 
 function TListParent.GetEnumerator: TListEnumer;
 begin
-     Result := TListEnumer.Create( Self );
-end;
+     if _ChildrsN = 0 then OnInit;
 
-//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TListEnumer
-
-//&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& private
-
-//&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& protected
-
-//////////////////////////////////////////////////////////////// A C C E S S O R
-
-function TListEnumer.GetChildr: TListChildr;
-begin
-     Result := _Childr;
-end;
-
-//&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& public
-
-constructor TListEnumer.Create( const Parent_:TListParent );
-begin
-     inherited Create;
-
-     if Parent_._ChildrsN = 0 then Parent_.OnInit;
-
-     _Parent := Parent_;
-     _Childr := nil;
-     _NextCh := Parent_.Origin._Next;
-end;
-
-//////////////////////////////////////////////////////////////////// M E T H O D
-
-function TListEnumer.MoveNext :Boolean;
-begin
-     _Childr := _NextCh;  // 次要素を先読みしているため、列挙中の削除は Current に対してのみ安全
-
-     Result := _Childr <> _Parent.Origin;
-
-     if Result then _NextCh := _Childr._Next;
+     Result._Parent := Self;
+     Result._Childr := nil;
+     Result._NextCh := Origin._Next;  // 空なら Origin ＝ 最初の MoveNext で即終端
 end;
 
 //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$【 R O U T I N E 】
